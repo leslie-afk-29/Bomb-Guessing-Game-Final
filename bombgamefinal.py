@@ -10,7 +10,6 @@ background_music = pygame.mixer.music.load("retro-arcade-game-music-297305.mp3")
 pygame.mixer.music.play(-1)
 explosion_sound = pygame.mixer.Sound("explosion-312361.mp3")
 
-
 #screen setup
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -19,6 +18,11 @@ clock = pygame.time.Clock()
 
 background = pygame.image.load("dog_background.jpg")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+mad_dog = pygame.image.load("mad_dog.png")
+mad_dog = pygame.transform.scale(mad_dog, (WIDTH, HEIGHT))
+
+nose_rect = pygame.Rect(445, 100, 115, 73)
+mad_mode = False
 
 #images
 left_hand_img = pygame.image.load("left_hand_fist.png").convert_alpha() #closed fist
@@ -32,16 +36,16 @@ open_R_img = pygame.image.load("open_RIGHT.png").convert_alpha()
 
 
 #scaling images
-left_hand_img = pygame.transform.scale(left_hand_img, (290, 290))
-right_hand_img = pygame.transform.scale(right_hand_img, (290, 290))
+left_hand_img = pygame.transform.scale(left_hand_img, (240, 240))
+right_hand_img = pygame.transform.scale(right_hand_img, (240, 240))
 bomb_img = pygame.transform.scale(bomb_img, (150, 150))
-open_L_img = pygame.transform.scale(open_L_img, (290, 290))
-open_R_img = pygame.transform.scale(open_R_img, (290, 290))
+open_L_img = pygame.transform.scale(open_L_img, (240, 240))
+open_R_img = pygame.transform.scale(open_R_img, (240, 240))
 explosion_img = pygame.transform.scale(explosion_img, (150, 150))
 
 #rectangle placement for hands
-left_hand_rect = pygame.Rect(80, 150, 290, 290)
-right_hand_rect = pygame.Rect(450, 150, 290 ,290)
+left_hand_rect = pygame.Rect(80, 200, 240, 240)
+right_hand_rect = pygame.Rect(450, 200, 240 ,240)
 
 #score
 score = 0
@@ -55,8 +59,11 @@ clicked_hand = None
 reveal_timer = 0
 
 def draw():
-    screen.blit(background, (0,0))
-
+    
+    if mad_mode:
+        screen.blit(mad_dog, (0,0))
+    else:
+        screen.blit(background, (0, 0))
     if not revealed: #bomb not revealed
         screen.blit(left_hand_img, left_hand_rect)
         screen.blit(right_hand_img, right_hand_rect)
@@ -92,7 +99,10 @@ while running: #main loop
             
     if event.type == pygame.MOUSEBUTTONDOWN and not revealed:
         mx, my = event.pos
-        
+
+        if nose_rect.collidepoint(mx, my):
+            mad_mode = True
+            
         if left_hand_rect.collidepoint(mx, my): #left hand click
             revealed = True
             clicked_hand = "left"
